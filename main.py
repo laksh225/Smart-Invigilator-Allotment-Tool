@@ -140,6 +140,7 @@ def random_unique(rep, added_list, designation):
 			print(unique_list, added_list)
 	return unique_list
 
+	
 def main():
 	session0 = [[],[],[],[],[]]
 	
@@ -166,27 +167,27 @@ def allocate(session):
 
 	DySp = random_unique(1, session[0], "Professor")
 	increment_flag(DySp)
-	print(f'{DySp = }')
+	print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
 
 	squad = random_unique(4, session[1]+session[2]+session[3], "Assistant Professor")
 	increment_flag(squad)
-	print(f'{squad = }')
+	print(f'SQUAD = {squad}\n')
 
 	invigilators = random_unique(10, squad+ \
 	session[1]+session[2]+session[3], "Assistant Professor")
 	increment_flag(invigilators)
-	print(f'{invigilators = }')
+	print(f'INVIGILATORS = {invigilators}\n')
 
 	backup = random_unique(3, squad+ \
 	session[1]+session[2]+invigilators+session[3], "Assistant Professor")
 	increment_flag(backup)
-	print(f'{backup = }')
+	print(f'BACKUP = {backup}\n')
 
 	#HoD print
 
 	reliever = random_unique(3, session[4], "Associate Professor")
 	increment_flag(reliever)
-	print(f'{reliever = }')
+	print(f'RELIEVER = {reliever}\n')
 
 	assert(len(set(squad+invigilators+backup))== \
 	len(squad+invigilators+backup))
