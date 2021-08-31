@@ -5,7 +5,9 @@ class Faculty:
         self.flag = flag
         self.designation = designation
     def __repr__(self):
-        return f'{self.name} - {self.designation} - {self.index} - {self.flag}'
+        return f'{self.name} - {self.designation} - {self.flag}'
+
+
 def increment_flag(fac_list):
     for fac in fac_list:
         fac.flag += 1
