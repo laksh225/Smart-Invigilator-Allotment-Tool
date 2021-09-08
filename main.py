@@ -47,76 +47,27 @@ Range 1-5 Professors
 
 from faculty import increment_flag
 from input import load
-from random import choice
+from random import choice, sample
 
-p_list1, asop_list1, assp_list1 = load()
-p_list2, asop_list2, assp_list2 = [],[],[]
-p_list = p_list1
-asop_list = asop_list1
-assp_list = assp_list1
+fac_dict = {}
+fac_dict[0] = load()			# load return a list of faculties
+								# Define HoD
 
-def change_list(fac, designation):
-	if designation=="Professor":
-		if id(p_list)==id(p_list1):
-			p_list.remove(fac)
-			p_list2.append(fac)
-		elif id(p_list)==id(p_list2):
-			p_list.remove(fac)
-			p_list1.append(fac)
+
+def get_faculty(designation, minimum=0, load_all = 0):
+	fac_list = []
+	global fac_dict
+	for key, _ in fac_dict:
+		while(key<minimum):
+			key+=1
+			continue
+		if (load_all):
+			fac_list.append(lambda fac:fac.designation==designation, fac_dict[key])
 		else:
-			raise Exception('p_list refers to neither \
-			p_list1 or p_list2')
-	if designation=="Associate Professor":
-		if id(asop_list)==id(asop_list1):
-			asop_list.remove(fac)
-			asop_list2.append(fac)
-		elif id(asop_list)==id(asop_list2):
-			asop_list.remove(fac)
-			asop_list1.append(fac)
-		else:
-			raise Exception('asop_list refers to neither \
-			asop_list1 or asop_list2')
-	if designation=="Assistant Professor":
-		if id(assp_list)==id(assp_list1):
-			assp_list.remove(fac)
-			assp_list2.append(fac)
-		elif id(assp_list)==id(assp_list2):
-			assp_list.remove(fac)
-			assp_list1.append(fac)
-		else:
-			raise Exception('assp_list refers to neither \
-			assp_list1 or assp_list2')
-
-def changeifempty(designation):
-	global p_list, p_list1, p_list2, asop_list, asop_list1, asop_list2, assp_list, assp_list1, assp_list2
-	if designation=="Professor":
-		if len(p_list)==0:
-			if id(p_list)==id(p_list1):
-				p_list = p_list2
-			elif id(p_list)==id(p_list2):
-				p_list = p_list1
-			else:
-				raise Exception('p_list refers to neither \
-				p_list1 or p_list2')
-	if designation=="Associate Professor":
-		if len(asop_list)==0:
-			if id(asop_list)==id(asop_list1):
-				asop_list = asop_list2
-			elif id(asop_list)==id(asop_list2):
-				asop_list = asop_list1
-			else:
-				raise Exception('asop_list refers to neither \
-				asop_list1 nor asop_list2')
-	if designation=="Assistant Professor":
-		if len(assp_list)==0:
-			if id(assp_list)==id(assp_list1):
-				assp_list = assp_list2
-			elif id(assp_list)==id(assp_list2):
-				assp_list = assp_list1
-			else:
-				raise Exception('assp_list refers to neither \
-				assp_list1 or assp_list2')
-
+			while(1):
+				fac_list.append(fac_dict[key])
+	return fac_list
+		
 def random_unique(rep, added_list, designation):
 	unique_list = []
 	for i in range(1000):
@@ -139,8 +90,59 @@ def random_unique(rep, added_list, designation):
 			print("Not enough staff")
 			print(unique_list, added_list)
 	return unique_list
-
 	
+def random_unique(rep, added_list, designation):
+	try:
+		fac_list = get_faculty(designation)
+	except:
+		raise Exception(f'Designation {designation} does not exist')
+	fac_list = filter(lambda fac:fac not in added_list, fac_list)
+	#add case if fac_list is empty and fac_list has length less than rep
+	unique_list = sample(fac_list, rep)
+	return unique_list
+	
+class Allocation:
+	def __init__(self):
+		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
+		
+	def __str__:
+		print(self.sessions)
+		
+	def allocate(n):
+		DySp = random_unique(1, session[0], "Professor")
+	increment_flag(DySp)
+	print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
+
+	invigilators = random_unique(10, squad+ \
+	session[1]+session[2]+session[3], "Assistant Professor")
+	increment_flag(invigilators)
+	print(f'INVIGILATORS = {invigilators}\n')
+
+	backup = random_unique(3, squad+ \
+	session[1]+session[2]+invigilators+session[3], "Assistant Professor")
+	increment_flag(backup)
+	print(f'BACKUP = {backup}\n')
+
+	reliever = random_unique(3, session[4], "Associate Professor")
+	increment_flag(reliever)
+	print(f'RELIEVER = {reliever}\n')
+
+	assert(len(set(squad+invigilators+backup))== \
+	len(squad+invigilators+backup))
+	session2 = [DySp]+[squad]+[invigilators]+[backup]+[reliever]
+	self.sessions[n] = session2
+	
+	def allocate_special():
+	#Squad
+	#HoD
+	squad = random_unique(4, session[1]+session[2]+session[3], "Assistant Professor")
+	increment_flag(squad)
+	print(f'SQUAD = {squad}\n')
+	
+	global HoD
+	print(f'HoD = {HoD}')
+	self.sessions
+		
 def main():
 	session0 = [[],[],[],[],[]]
 	
@@ -162,38 +164,7 @@ def main():
 	sessions = [session1]+[session2]+[session3]+[session4]+[session5]+[session6]
 	return sessions
  
- 
-def allocate(session):
 
-	DySp = random_unique(1, session[0], "Professor")
-	increment_flag(DySp)
-	print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
-
-	squad = random_unique(4, session[1]+session[2]+session[3], "Assistant Professor")
-	increment_flag(squad)
-	print(f'SQUAD = {squad}\n')
-
-	invigilators = random_unique(10, squad+ \
-	session[1]+session[2]+session[3], "Assistant Professor")
-	increment_flag(invigilators)
-	print(f'INVIGILATORS = {invigilators}\n')
-
-	backup = random_unique(3, squad+ \
-	session[1]+session[2]+invigilators+session[3], "Assistant Professor")
-	increment_flag(backup)
-	print(f'BACKUP = {backup}\n')
-
-	#HoD print
-
-	reliever = random_unique(3, session[4], "Associate Professor")
-	increment_flag(reliever)
-	print(f'RELIEVER = {reliever}\n')
-
-	assert(len(set(squad+invigilators+backup))== \
-	len(squad+invigilators+backup))
-	session2 = [DySp]+[squad]+[invigilators]+[backup]+[reliever]
-	return session2
-	
 if __name__ == '__main__':
 	sessions = main()
 
