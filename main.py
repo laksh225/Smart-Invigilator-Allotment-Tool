@@ -1,3 +1,107 @@
+from time import sleep
+from faculty import increment_flag, Faculty
+from input import load
+from random import sample
+
+fac_dict = {}
+fac_dict[0] = load()			# load return a list of faculties
+HoD = [Faculty(100, "Dr. K S Geetha", 0, "HoD")]					# Get HoD
+
+
+def get_faculty(designation, load_all = 0):
+	fac_list = []
+	global fac_dict
+	for flag in fac_dict.keys(): 
+		#if (load_all):
+		fac_list+=list(filter(lambda fac:fac.designation==designation, [fac for facl in fac_dict[flag] for fac in facl]))
+		#else:
+		#	while(1):
+		#		fac_list+=fac_dict[flag]
+	return fac_list
+
+def random_unique(rep, added_list, designation):
+	fac_list = get_faculty(designation)
+	if len(fac_list)==0:
+		print("Empty fac_list was returned")
+		sleep(1)
+	fac_list = list(filter(lambda fac:fac not in added_list, fac_list))
+	if len(fac_list)==0 or len(fac_list)<rep:
+		if not load_all:
+			return random_unique(rep, added_list, designation, load_all=1)
+		else:
+			return Exception("Enough staff not available")
+	unique_list = sample(fac_list, rep)
+	return unique_list
+
+class Allocate:
+	def __init__(self):
+		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
+
+	def __str__(self):
+		print(self.sessions)
+
+	def allocate(self, n):
+		comman = self.sessions[0][0]+self.sessions[0][1]
+		DySp = random_unique(1,self.sessions[n-1][0]+comman, "Professor")
+		increment_flag(DySp)
+		print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
+
+		invigilators = random_unique(10, self.sessions[n-1][1]+self.sessions[n-1][2]+comman, "Assistant Professor")
+		increment_flag(invigilators)
+		print(f'INVIGILATORS = {invigilators}\n')
+
+		backup = random_unique(3, invigilators+self.sessions[n-1][1]+\
+			self.sessions[n-1][2]+comman, "Assistant Professor")
+		increment_flag(backup)
+		print(f'BACKUP = {backup}\n')
+
+		reliever = random_unique(3, self.sessions[n-1][3], "Associate Professor")
+		increment_flag(reliever)
+		print(f'RELIEVER = {reliever}\n')
+
+		assert(len(set(invigilators+backup))== \
+		len(invigilators+backup))
+		self.sessions[n] = [DySp]+[invigilators]+[backup]+[reliever]
+
+	def allocate_comman(self):
+		squad = random_unique(4, [], "Assistant Professor")
+		increment_flag(squad)
+		print(f'SQUAD = {squad}\n')
+
+		global HoD
+		increment_flag(HoD)
+		print(f'HoD = {HoD}')
+		self.sessions[0]=[squad]+[HoD]+[[]]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session
+		print(self.sessions)
+
+def main():
+	sessions = Allocate()
+	sessions.allocate_comman()
+	print("\n*****************Session 1***********************\n")
+	sessions.allocate(1)
+	print("\n*****************Session 2***********************\n")
+	sessions.allocate(2)
+	print("\n*****************Session 3***********************\n")
+	sessions.allocate(3)
+	print("\n*****************Session 4***********************\n")
+	sessions.allocate(4)
+	print("\n*****************Session 5***********************\n")
+	sessions.allocate(5)
+	print("\n*****************Session 6***********************\n")
+	sessions.allocate(6)
+
+	return sessions
+
+
+if __name__ == '__main__':
+	sessions = main()
+
+##############
+""" Sessions = List of session
+	Session = List of combination of DySp, Squad, Invigilator, Backup, Reliever
+	Invigilator = List of faculty objects
+"""
+
 """Model 1
 400 students 10 classroom
 Rvce ECE staff structure
@@ -6,7 +110,7 @@ Prof-5(DSP)
 Associate prof- 10(rel/squad)
 Assist prof-35(squa/rs)
 
-Inputs- 
+Inputs-
 •	 Excel sheets
 •	 Gender
 •	 Designation names
@@ -16,7 +120,7 @@ Previous exam history.
 Computation:
 Creating variables
 Level 1:
-Random selection: 
+Random selection:
 •	 1 out of 5 - prof
 •	 Squad 4 (2 +2) out of 35 ast p
 •	 10 out of 31-astp
@@ -45,131 +149,3 @@ Range 1-5 Professors
 15-48 Assistant
 """
 
-from faculty import increment_flag
-from input import load
-from random import choice, sample
-
-fac_dict = {}
-fac_dict[0] = load()			# load return a list of faculties
-								# Define HoD
-
-
-def get_faculty(designation, minimum=0, load_all = 0):
-	fac_list = []
-	global fac_dict
-	for key, _ in fac_dict:
-		while(key<minimum):
-			key+=1
-			continue
-		if (load_all):
-			fac_list.append(lambda fac:fac.designation==designation, fac_dict[key])
-		else:
-			while(1):
-				fac_list.append(fac_dict[key])
-	return fac_list
-		
-def random_unique(rep, added_list, designation):
-	unique_list = []
-	for i in range(1000):
-		if designation=="Professor":
-			fac = choice(p_list)
-		elif designation=="Associate Professor":
-			fac = choice(asop_list)
-		elif designation=="Assistant Professor":
-			fac = choice(assp_list)
-		else:
-			raise Exception(f'Designation {designation} does not exist')
-		if fac not in unique_list:
-			if fac not in added_list:
-				unique_list.append(fac)
-				change_list(fac, designation)
-				changeifempty(designation)
-			if len(unique_list) == rep:
-				break
-		if i==999:
-			print("Not enough staff")
-			print(unique_list, added_list)
-	return unique_list
-	
-def random_unique(rep, added_list, designation):
-	try:
-		fac_list = get_faculty(designation)
-	except:
-		raise Exception(f'Designation {designation} does not exist')
-	fac_list = filter(lambda fac:fac not in added_list, fac_list)
-	#add case if fac_list is empty and fac_list has length less than rep
-	unique_list = sample(fac_list, rep)
-	return unique_list
-	
-class Allocation:
-	def __init__(self):
-		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
-		
-	def __str__:
-		print(self.sessions)
-		
-	def allocate(n):
-		DySp = random_unique(1, session[0], "Professor")
-	increment_flag(DySp)
-	print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
-
-	invigilators = random_unique(10, squad+ \
-	session[1]+session[2]+session[3], "Assistant Professor")
-	increment_flag(invigilators)
-	print(f'INVIGILATORS = {invigilators}\n')
-
-	backup = random_unique(3, squad+ \
-	session[1]+session[2]+invigilators+session[3], "Assistant Professor")
-	increment_flag(backup)
-	print(f'BACKUP = {backup}\n')
-
-	reliever = random_unique(3, session[4], "Associate Professor")
-	increment_flag(reliever)
-	print(f'RELIEVER = {reliever}\n')
-
-	assert(len(set(squad+invigilators+backup))== \
-	len(squad+invigilators+backup))
-	session2 = [DySp]+[squad]+[invigilators]+[backup]+[reliever]
-	self.sessions[n] = session2
-	
-	def allocate_special():
-	#Squad
-	#HoD
-	squad = random_unique(4, session[1]+session[2]+session[3], "Assistant Professor")
-	increment_flag(squad)
-	print(f'SQUAD = {squad}\n')
-	
-	global HoD
-	print(f'HoD = {HoD}')
-	self.sessions
-		
-def main():
-	session0 = [[],[],[],[],[]]
-	
-	print("\n*****************Session 1***********************\n")
-	session1 = allocate(session0)
-	
-	print("\n*****************Session 2***********************\n")
-	session2 = allocate(session1)
-
-	print("\n*****************Session 3***********************\n")
-	session3 = allocate(session2)
-	print("\n*****************Session 4***********************\n")
-	session4 = allocate(session3)
-	print("\n*****************Session 5***********************\n")
-	session5 = allocate(session4)
-	print("\n*****************Session 6***********************\n")
-	session6 = allocate(session5)
-	
-	sessions = [session1]+[session2]+[session3]+[session4]+[session5]+[session6]
-	return sessions
- 
-
-if __name__ == '__main__':
-	sessions = main()
-
-##############
-""" Sessions = List of session
-	Session = List of combination of DySp, Squad, Invigilator, Backup, Reliever
-	Invigilator = List of faculty objects
-"""
