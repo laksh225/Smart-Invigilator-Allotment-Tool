@@ -5,13 +5,13 @@ from random import sample
 
 fac_dict = {}
 fac_dict[0] = load()			# load return a list of faculties
-HoD = [Faculty(100, "Dr. K S Geetha", 0, "HoD")]					# Get HoD
+HoD = [Faculty(100, "Dr. K S Geetha", 0, "HoD", 1)]					# Get HoD
 
 
 def get_faculty(designation, load_all = 0):
 	fac_list = []
 	global fac_dict
-	for flag in fac_dict.keys(): 
+	for flag in fac_dict.keys():
 		#if (load_all):
 		fac_list+=list(filter(lambda fac:fac.designation==designation, [fac for facl in fac_dict[flag] for fac in facl]))
 		#else:
@@ -19,12 +19,14 @@ def get_faculty(designation, load_all = 0):
 		#		fac_list+=fac_dict[flag]
 	return fac_list
 
-def random_unique(rep, added_list, designation):
+def random_unique(rep, added_list, designation, experience=0):
 	fac_list = get_faculty(designation)
 	if len(fac_list)==0:
 		print("Empty fac_list was returned")
 		sleep(1)
 	fac_list = list(filter(lambda fac:fac not in added_list, fac_list))
+	if experience:
+		fac_list = list(filter(lambda fac:fac.experience==1, fac_list))
 	if len(fac_list)==0 or len(fac_list)<rep:
 		if not load_all:
 			return random_unique(rep, added_list, designation, load_all=1)
@@ -64,7 +66,7 @@ class Allocate:
 		self.sessions[n] = [DySp]+[invigilators]+[backup]+[reliever]
 
 	def allocate_comman(self):
-		squad = random_unique(4, [], "Assistant Professor")
+		squad = random_unique(4, [], "Assistant Professor", experience = 1)
 		increment_flag(squad)
 		print(f'SQUAD = {squad}\n')
 

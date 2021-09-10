@@ -16,17 +16,17 @@ def load():
         if(sheet1.cell(row=i, column=1).value != None):
             #print(str(sheet1.cell(row=i, column=2).value))
             if(str(sheet1.cell(row=i, column=4).value)=='Professor'):
-                p_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value)))
+                p_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value),int(sheet1.cell(row=i, column=5).value)))
             elif(str(sheet1.cell(row=i, column=4).value)=='Associate Professor'): 
-                asop_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value)))
+                asop_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value),int(sheet1.cell(row=i, column=5).value)))
             elif(str(sheet1.cell(row=i, column=4).value)=='Assistant Professor'):
-                assp_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value)))
+                assp_list.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value),int(sheet1.cell(row=i, column=5).value)))
             else:
-                others.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value)))
+                others.append(Faculty(int(sheet1.cell(row=i, column=1).value), str(sheet1.cell(row=i, column=2).value), 0, str(sheet1.cell(row=i, column=4).value),int(sheet1.cell(row=i, column=5).value)))
     f_list = [p_list]+[asop_list]+[assp_list]
     assert(len(others)==0)
     return f_list
-    
+
 if __name__ == '__main__':
     f_list = load()
     print(*f_list, sep="\n")		# * is print the list without brackets ( '[', ']' )
