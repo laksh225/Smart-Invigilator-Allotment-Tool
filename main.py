@@ -1,5 +1,5 @@
 from time import sleep
-from faculty import increment_flag, Faculty
+from faculty import Faculty, inc_flag
 from input import load
 from random import sample
 
@@ -39,41 +39,38 @@ class Allocate:
 	def __init__(self):
 		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
 
-	def __str__(self):
-		print(self.sessions)
+	#def __str__(self):
+	#	print(self.sessions)
 
 	def allocate(self, n):
-		comman = self.sessions[0][0]+self.sessions[0][1]
-		DySp = random_unique(1,self.sessions[n-1][0]+comman, "Professor")
-		increment_flag(DySp)
+		comman = self.sessions[0][0]+self.sessions[0][2]
+		DySp = random_unique(1,self.sessions[n-1][0], "Professor")
+		[fac.inc_flag() for fac in DySp]
 		print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
 
-		invigilators = random_unique(10, self.sessions[n-1][1]+self.sessions[n-1][2]+comman, "Assistant Professor")
-		increment_flag(invigilators)
+		invigilators = random_unique(10, self.sessions[n-1][1]+comman, "Assistant Professor")
+		[fac.inc_flag() for fac in invigilators]
 		print(f'INVIGILATORS = {invigilators}\n')
 
-		backup = random_unique(3, invigilators+self.sessions[n-1][1]+\
-			self.sessions[n-1][2]+comman, "Assistant Professor")
-		increment_flag(backup)
-		print(f'BACKUP = {backup}\n')
-
-		reliever = random_unique(3, self.sessions[n-1][3], "Associate Professor")
-		increment_flag(reliever)
+		reliever = random_unique(3, self.sessions[n-1][2], "Associate Professor")
+		[fac.inc_flag() for fac in reliever]
 		print(f'RELIEVER = {reliever}\n')
 
-		assert(len(set(invigilators+backup))== \
-		len(invigilators+backup))
-		self.sessions[n] = [DySp]+[invigilators]+[backup]+[reliever]
+		self.sessions[n] = [DySp]+[invigilators]+[reliever]
 
 	def allocate_comman(self):
-		squad = random_unique(4, [], "Assistant Professor", experience = 1)
-		increment_flag(squad)
+		backup = random_unique(3, [], "Assistant Professor")
+		print(f'BACKUP = {backup}\n')
+
+		squad = random_unique(4, backup, "Assistant Professor", experience = 1)
+		for fac in squad:
+			fac.flag+=3
 		print(f'SQUAD = {squad}\n')
 
 		global HoD
-		increment_flag(HoD)
+		HoD[0].flag+=1						#What to put?
 		print(f'HoD = {HoD}')
-		self.sessions[0]=[squad]+[HoD]+[[]]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session
+		self.sessions[0]=[squad]+[HoD]+[backup]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session
 		print(self.sessions)
 
 def main():
@@ -91,6 +88,7 @@ def main():
 	sessions.allocate(5)
 	print("\n*****************Session 6***********************\n")
 	sessions.allocate(6)
+	print(sessions.sessions)
 
 	return sessions
 
