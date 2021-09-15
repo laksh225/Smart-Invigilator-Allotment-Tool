@@ -13,11 +13,11 @@ def load():
     asop_list = []
     assp_list = []
     others = []
-    cur.exxecute('''SELECT count(*) FROM ece''')
+    cur.execute('''SELECT count(*) FROM ece''')
     n = int(cur.fetchone()[0])
-    
+
     for i in range(1, n+1): #i -> row
-            cur.execute('''SELECT * FROM ece WHERE ROWID=?''',(i,))
+        cur.execute('''SELECT * FROM ece WHERE ROWID=?''',(i,))
 
         r=cur.fetchone()
 
@@ -39,7 +39,7 @@ def load():
 
         else:
             others.append(Faculty(r[0], r[5], r[2],r[3],r[4]))
-    f_list = [p_list]+[asop_list]+[assp_list]
+    f_list = p_list+asop_list+assp_list
     assert(len(others)==0)
     return f_list
 

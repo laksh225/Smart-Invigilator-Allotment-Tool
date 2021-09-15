@@ -1,39 +1,37 @@
 from time import sleep
 from faculty import Faculty, inc_flag
 from input import load
-from random import sample
+from random import shuffle
+
 
 fac_dict = {}
 fac_dict[0] = load()			# load return a list of faculties
-HoD = [Faculty(100, "Dr. K S Geetha", 0, "HoD", 1)]					# Get HoD
+HoD = [Faculty("Dr. K S Geetha", 0, "HoD", 1, 1)]					# Get HoD
 
-
-def get_faculty(designation, load_all = 0):
+def get_faculty(designation, index, load_all = 0):
 	fac_list = []
 	global fac_dict
-	for flag in fac_dict.keys():
-		#if (load_all):
-		fac_list+=list(filter(lambda fac:fac.designation==designation, [fac for facl in fac_dict[flag] for fac in facl]))
-		#else:
-		#	while(1):
-		#		fac_list+=fac_dict[flag]
+	#if (load_all):
+	fac_list=list(filter(lambda fac:fac.designation==designation, fac_dict[index]))
+	#else:
+	#	while(1):
+	#		fac_list+=fac_dict[flag]
 	return fac_list
 
 def random_unique(rep, added_list, designation, experience=0):
-	fac_list = get_faculty(designation)
-	if len(fac_list)==0:
-		print("Empty fac_list was returned")
-		sleep(1)
-	fac_list = list(filter(lambda fac:fac not in added_list, fac_list))
-	if experience:
-		fac_list = list(filter(lambda fac:fac.experience==1, fac_list))
-	if len(fac_list)==0 or len(fac_list)<rep:
-		if not load_all:
-			return random_unique(rep, added_list, designation, load_all=1)
-		else:
-			return Exception("Enough staff not available")
-	unique_list = sample(fac_list, rep)
-	return unique_list
+	unique_list = []
+	i = 0
+	while(len(unique_list)<rep):
+		fac_list = get_faculty(designation, i)
+		fac_list = list(filter(lambda fac:fac not in added_list, fac_list))
+		if experience:
+			fac_list = list(filter(lambda fac:fac.experience==1, fac_list))
+		if i>=1000:
+			raise Exception("Enough staff not available")
+		shuffle(fac_list)
+		unique_list += fac_list
+		i+=1
+	return unique_list[0:rep]
 
 class Allocate:
 	def __init__(self):

@@ -1,9 +1,10 @@
 class Faculty:
-    def __init__(self, index, name, flag, designation, experience):
+    def __init__(self, name, flag, designation, experience, availability):
         self.name = name
         self.flag = flag
         self.designation = designation
         self.experience = experience
+        self.availability = availability
 
     def __repr__(self):
         return f'{self.name} - {self.designation} - {self.flag}'
