@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block head %}
+<title>Home Page</title>
+{% endblock %}
+{% block body %}
+<ul>
+<li>Backup Faculties = {{ sessions[0][2] }}</li>
+<li>Squad = {{ sessions[0][0] }}</li>
+<li>HoD = {{ sessions[0][1] }}</li>
+</ul>
+{% for session in sessions[1:7] %}
+<ul>
+<li>DySp = {{session[0]}}</li>
+<li>Invigilators = {{session[1]}}</li>
+<li>Relievers = {{session[2]}}</li>
+</ul> 
+{% endfor %}
+{% endblock %}

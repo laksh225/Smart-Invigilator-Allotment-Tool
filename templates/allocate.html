@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<title> Allocate </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<script>
+$(document).ready(function(){
+$("input").click(function(){
+    var text = $(this).attr('id');
+
+    $.ajax({
+      url: "{{url_for('do_allocation')}}",
+      type: "get",
+      data: {jsdata: text},
+      success: function(response) {
+        $("#details").html(response);
+      },
+      error: function(xhr) {
+        console.log("Some Error occured")
+      }
+    });
+});
+});
+</script>
+<table>
+<tr>
+<td><input type='submit' id='init'>Allocation init</td>
+<td><input type='submit' id='comman'>Allocate comman</td>
+<td><input type='submit' id='session'>Allocate Next</td>
+</tr>
+</table>
+<br><br>
+<div id='details'></div>
+</body>
+</html>

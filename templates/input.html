@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block head %}
+<title>Input Faculties</title>
+{% endblock %}
+
+{% block body %}
+<ul>
+{% for fac in fac_list %}
+<li> Name={{ fac[0] }} Email={{fac[1]}} Designation={{fac[2]}} </li>
+{% endfor %}
+{% endblock %}

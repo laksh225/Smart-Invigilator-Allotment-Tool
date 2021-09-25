@@ -1,0 +1,13 @@
+<!doctype html>
+<head>
+<title>Details</title>
+</head>
+<body>
+<input list="faculty" name ="faculty">
+ <datalist id="faculty">
+ {% for fac in fac_list %}
+ <option value="{{ fac.name }}">
+ {% endfor %}
+ </datalist>
+</body>
+</html>
