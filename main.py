@@ -5,7 +5,6 @@ from random import shuffle
 
 
 fac_dict = {}
-fac_dict[0] = load()			# load return a list of faculties
 HoD = [Faculty("Dr. K S Geetha", 0, "HoD", 1, 1)]					# Get HoD
 
 def get_faculty(designation, index, load_all = 0):
@@ -35,6 +34,9 @@ def random_unique(rep, added_list, designation, experience=0):
 
 class Allocate:
 	def __init__(self):
+		global fac_dict
+		fac_dict = {}
+		fac_dict[0] = load()			# load return a list of faculties
 		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
 
 	#def __str__(self):
