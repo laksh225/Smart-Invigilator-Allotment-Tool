@@ -2,10 +2,12 @@ from time import sleep
 from faculty import Faculty, inc_flag
 from input import load
 from random import shuffle
-
+import sqlite3
+import datetime
 
 fac_dict = {}
-HoD = [Faculty("Dr. K S Geetha", 0, "HoD", 1, 1)]					# Get HoD
+HoD = [Faculty("Dr. K S Geetha", 0, "HoD", 1, 1, "HoD")]					# Get HoD
+room_list = [chr(i+65) for i in range(10)]
 
 def get_faculty(designation, index, load_all = 0):
 	fac_list = []
@@ -38,6 +40,7 @@ class Allocate:
 		fac_dict = {}
 		fac_dict[0] = load()			# load return a list of faculties
 		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
+		self.filename = str(datetime.datetime.now())+".db"
 
 	#def __str__(self):
 	#	print(self.sessions)
@@ -46,32 +49,100 @@ class Allocate:
 		comman = self.sessions[0][0]+self.sessions[0][2]
 		DySp = random_unique(1,self.sessions[n-1][0], "Professor")
 		[fac.inc_flag() for fac in DySp]
+		for fac in DySp:
+			fac.role = "DySp"
 		print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
 
 		invigilators = random_unique(10, self.sessions[n-1][1]+comman, "Assistant Professor")
 		[fac.inc_flag() for fac in invigilators]
+		for fac in invigilators:
+			fac.role = "Invigilator"
 		print(f'INVIGILATORS = {invigilators}\n')
 
 		reliever = random_unique(3, self.sessions[n-1][2], "Associate Professor")
 		[fac.inc_flag() for fac in reliever]
+		for fac in reliever:
+			fac.role = "Reliever"
 		print(f'RELIEVER = {reliever}\n')
 
 		self.sessions[n] = [DySp]+[invigilators]+[reliever]
+		roles = ["DySp", "Invigilator", "Reliever"]
+
+		con = sqlite3.connect(self.filename)
+		cur = con.cursor()
+		create_query = f"CREATE TABLE {'session'+str(n)} ( \n name text,\n"+",\n".join([f'{room} text' for room in room_list])+")"
+		print(create_query)
+		cur.execute(create_query)
+		for fac_list in self.sessions[n]:
+			for fac in fac_list:
+				result = cur.execute( f"Insert into {'session'+str(n)} values(?, "+", ".join(['?' for room in room_list])+")",get_query(fac_list, fac, n) )
+	#	result = cur.executemany(f"Insert into {'sessions'+str(n)} values(:a, :b, :c)", [{'a':self.sessions[n][2][i].name, 'b':'Reliever', 'c':'room'+str(i)} for i in range(len(reliever))])
+		con.commit()
+		con.close()
 
 	def allocate_comman(self):
 		backup = random_unique(3, [], "Assistant Professor")
+		for fac in backup:
+			fac.role = "Backup"
 		print(f'BACKUP = {backup}\n')
 
 		squad = random_unique(4, backup, "Assistant Professor", experience = 1)
 		for fac in squad:
 			fac.flag+=3
+			fac.role = "Squad"
 		print(f'SQUAD = {squad}\n')
 
 		global HoD
 		HoD[0].flag+=1						#What to put?
+		for fac in HoD:
+			fac.role = "HoD"
 		print(f'HoD = {HoD}')
-		self.sessions[0]=[squad]+[HoD]+[backup]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session
-		print(self.sessions)
+		self.sessions[0]=[squad]+[HoD]+[backup]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session	
+		roles = ["Backup", "Squad", "HoD"]
+		con = sqlite3.connect(self.filename)
+		cur = con.cursor()
+		create_query = f"CREATE TABLE comman ( \n name text,\n"+",\n".join([f'{room} text' for room in room_list])+")"
+		print(create_query)
+		cur.execute(create_query)
+		for fac_list in self.sessions[0]:
+			for fac in fac_list:
+				result = cur.execute( f"Insert into comman values(?, "+", ".join(['?' for room in room_list])+")",get_query(fac_list, fac) )
+		con.commit()
+		con.close()
+
+def get_query(fac_list, fac, n=0):
+	global room_list
+	l = [fac.name]
+	if fac.role=="Invigilator":
+		for i in range(len(room_list)):
+			if fac_list.index(fac)==i:
+				l.append(fac.role)
+			else:
+				l.append("-")
+		return tuple(l)
+	elif fac.role=="Reliever":
+		a = list(split(range(len(room_list)), 3))[fac_list.index(fac)]
+		for i in range(len(room_list)):
+			if i in a:
+				l.append(fac.role)
+			else:
+				l.append("-")
+		return tuple(l)
+
+	elif fac.role=="DySp":
+		return tuple([fac.name]+["-" for room in room_list])
+	elif fac.role=="Squad":
+		return tuple([fac.name]+["-" for room in room_list])
+	elif fac.role=="Backup":
+		return tuple([fac.name]+["-" for room in room_list])
+	elif fac.role=="HoD":
+		return tuple([fac.name]+["-" for room in room_list])
+	else:
+		raise Exception(f"Role {fac.role} not correct")
+
+def split(a, n):
+	k, m = divmod(len(a), n)
+	return (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))
 
 def main():
 	sessions = Allocate()
@@ -88,8 +159,6 @@ def main():
 	sessions.allocate(5)
 	print("\n*****************Session 6***********************\n")
 	sessions.allocate(6)
-	print(sessions.sessions)
-
 	return sessions
 
 

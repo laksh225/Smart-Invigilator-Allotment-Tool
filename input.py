@@ -27,18 +27,18 @@ def load():
 
         if(r[2] =='Professor'):
 
-            p_list.append(Faculty(r[0], r[5], r[2],r[3],r[4]))
+            p_list.append(Faculty(r[0], r[5], r[2], r[3], r[4], ""))
 
-        elif(r[2]=='Associate Professor'): 
+        elif(r[2]=='Associate Professor'):
 
-            asop_list.append(Faculty(r[0], r[5], r[2],r[3],r[4]))
+            asop_list.append(Faculty(r[0], r[5], r[2], r[3], r[4], ""))
 
         elif(r[2]=='Assistant Professor'):
 
-            assp_list.append(Faculty(r[0], r[5], r[2],r[3],r[4]))
+            assp_list.append(Faculty(r[0], r[5], r[2], r[3], r[4], ""))
 
         else:
-            others.append(Faculty(r[0], r[5], r[2],r[3],r[4]))
+            others.append(Faculty(r[0], r[5], r[2], r[3], r[4], ""))
     f_list = p_list+asop_list+assp_list
     assert(len(others)==0)
     return f_list
