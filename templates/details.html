@@ -1,13 +1,12 @@
-<!doctype html>
-<head>
+{% extends "base.html" %}
+{% block head %}
 <title>Details</title>
-</head>
-<body>
+{% endblock %}
+{% block body %}
 <input list="faculty" name ="faculty">
  <datalist id="faculty">
  {% for fac in fac_list %}
  <option value="{{ fac.name }}">
  {% endfor %}
  </datalist>
-</body>
-</html>
+{% endblock %}
