@@ -1,11 +1,19 @@
-from flask import Flask, render_template, g, abort, request
+from flask import Flask, render_template, g, abort, request, session, send_from_directory
+from flask_session import Session
 from main import main, Allocate
 from input import load
 import sqlite3
 import pickle
+import weasyprint
+import requests
 
 DATABASE = 'inputdb.sqlite'
 app = Flask(__name__)
+app.config['SECRET_KEY'] = None		#CHANGE SECRET KEY
+
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = "filesystem"
+Session(app)
 
 def get_db():
 	db = getattr(g, '_database', None)
@@ -75,6 +83,47 @@ def admin():
 def details():
 	fac_list = load()
 	return render_template('details.html', fac_list=fac_list)
+
+@app.route("/details_endpoint", methods=["POST"])
+def details_ep():
+	name = request.form.get("faculty")
+	op_db_name = "2021-09-30 20:06:50.828809.db" #session["op_db"]
+	con = sqlite3.connect(op_db_name)
+	cur = con.cursor()
+	result = {}
+	for table in ["comman", "session1", "session2", "session3", "session4", "session5", "session6"]:
+		r = cur.execute(f"SELECT * from {table} WHERE name='{name}'")
+		res = r.fetchone()
+		if r.fetchone():
+			raise Exception("More than one allocation for a faculty in one session")
+		if 1:
+			result[table] = res
+	return render_template('details_ep.html', result=result)
+
+@app.route("/details_print", methods=["POST"])
+def details_print():
+	name = request.form.get("faculty")
+	response = requests.post("http://127.0.0.1:5000/details_endpoint", data={"faculty":name})
+	html = weasyprint.HTML(string=response.text)
+	html.write_pdf("tmp.pdf")
+	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
+
+@app.route("/details_all", methods=["GET"])
+def details_all():
+	fac_list = load()
+	html=""
+	for fac in fac_list:
+		response = requests.post("http://127.0.0.1:5000/details_endpoint", data={"faculty":fac.name})
+		html+=response.text
+	html = weasyprint.HTML(string=html)
+	html.write_pdf("tmp.pdf")
+	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
+
+"""
+Details to store per user:
+name
+output db name
+"""
 
 if __name__=='__main__':
 	app.run(debug=True)

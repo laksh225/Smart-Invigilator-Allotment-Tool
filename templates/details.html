@@ -1,12 +1,32 @@
 {% extends "base.html" %}
 {% block head %}
 <title>Details</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 {% endblock %}
 {% block body %}
-<input list="faculty" name ="faculty">
+<script>
+$(document).ready(function(){
+$("#get_details").click(function(event){
+event.preventDefault();
+   var text = $("#textbox")[0].value;
+
+    $.post("{{url_for('details_ep')}}","faculty="+text,
+      function(data) {
+        $("#details").html(data);
+      }
+    );
+});
+});
+</script>
+<form method="post" action="/details_ep">
+<input list="faculty" name="faculty" id="textbox">
  <datalist id="faculty">
  {% for fac in fac_list %}
  <option value="{{ fac.name }}">
  {% endfor %}
  </datalist>
+<input type="submit" value="Get details" id="get_details">
+<input type="submit" value="Print details" id="print_details" formaction="/details_print" formmethod="post">
+</form>
+<div id="details"></div>
 {% endblock %}
