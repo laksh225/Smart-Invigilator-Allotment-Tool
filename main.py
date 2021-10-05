@@ -39,6 +39,8 @@ class Allocate:
 		global fac_dict
 		fac_dict = {}
 		fac_dict[0] = load()			# load return a list of faculties
+		for i in range(1, 1000):
+			fac_dict[i] = []
 		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
 		self.filename = str(datetime.datetime.now())+".db"
 
@@ -48,7 +50,10 @@ class Allocate:
 	def allocate(self, n):
 		comman = self.sessions[0][0]+self.sessions[0][2]
 		DySp = random_unique(1,self.sessions[n-1][0], "Professor")
-		[fac.inc_flag() for fac in DySp]
+		[fac.inc_flag() for fac in DySp] #Increment flag
+		for fac in DySp:
+			fac_dict[fac.flag-1].remove(fac)
+			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
 		for fac in DySp:
 			fac.role = "DySp"
 		print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
@@ -56,11 +61,17 @@ class Allocate:
 		invigilators = random_unique(10, self.sessions[n-1][1]+comman, "Assistant Professor")
 		[fac.inc_flag() for fac in invigilators]
 		for fac in invigilators:
+			fac_dict[fac.flag-1].remove(fac)
+			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
+		for fac in invigilators:
 			fac.role = "Invigilator"
 		print(f'INVIGILATORS = {invigilators}\n')
 
 		reliever = random_unique(3, self.sessions[n-1][2], "Associate Professor")
 		[fac.inc_flag() for fac in reliever]
+		for fac in reliever:
+			fac_dict[fac.flag-1].remove(fac)
+			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
 		for fac in reliever:
 			fac.role = "Reliever"
 		print(f'RELIEVER = {reliever}\n')
@@ -70,12 +81,12 @@ class Allocate:
 
 		con = sqlite3.connect(self.filename)
 		cur = con.cursor()
-		create_query = f"CREATE TABLE {'session'+str(n)} ( \n name text,\n"+",\n".join([f'{room} text' for room in room_list])+")"
-		print(create_query)
+		create_query = f"CREATE TABLE {'session'+str(n)} ( \n name text,\n role text,\n room no text)"
+		#print(create_query)
 		cur.execute(create_query)
 		for fac_list in self.sessions[n]:
 			for fac in fac_list:
-				result = cur.execute( f"Insert into {'session'+str(n)} values(?, "+", ".join(['?' for room in room_list])+")",get_query(fac_list, fac, n) )
+				result = cur.execute( f"Insert into {'session'+str(n)} values(?, ?, ?)" ,get_query(fac_list, fac, n))
 	#	result = cur.executemany(f"Insert into {'sessions'+str(n)} values(:a, :b, :c)", [{'a':self.sessions[n][2][i].name, 'b':'Reliever', 'c':'room'+str(i)} for i in range(len(reliever))])
 		con.commit()
 		con.close()
@@ -101,44 +112,41 @@ class Allocate:
 		roles = ["Backup", "Squad", "HoD"]
 		con = sqlite3.connect(self.filename)
 		cur = con.cursor()
-		create_query = f"CREATE TABLE comman ( \n name text,\n"+",\n".join([f'{room} text' for room in room_list])+")"
-		print(create_query)
+		create_query = f"CREATE TABLE comman ( \n name text,\nrole text,\nroom_no text)"
+		#print(create_query)
 		cur.execute(create_query)
 		for fac_list in self.sessions[0]:
 			for fac in fac_list:
-				result = cur.execute( f"Insert into comman values(?, "+", ".join(['?' for room in room_list])+")",get_query(fac_list, fac) )
+				result = cur.execute( f"Insert into comman values(?, ?, ?)",get_query(fac_list, fac) )
 		con.commit()
 		con.close()
 
 def get_query(fac_list, fac, n=0):
 	global room_list
-	l = [fac.name]
+	l = [fac.name, fac.role]
 	if fac.role=="Invigilator":
 		for i in range(len(room_list)):
 			if fac_list.index(fac)==i:
-				l.append(fac.role)
-			else:
-				l.append("-")
-		return tuple(l)
+				room = room_list[i]
+		l.append(room)
 	elif fac.role=="Reliever":
+		rooms = []
 		a = list(split(range(len(room_list)), 3))[fac_list.index(fac)]
 		for i in range(len(room_list)):
 			if i in a:
-				l.append(fac.role)
-			else:
-				l.append("-")
-		return tuple(l)
-
+				rooms.append(room_list[i])
+		l.append(", ".join(rooms))
 	elif fac.role=="DySp":
-		return tuple([fac.name]+["-" for room in room_list])
+		l.append("")
 	elif fac.role=="Squad":
-		return tuple([fac.name]+["-" for room in room_list])
+		l.append("")
 	elif fac.role=="Backup":
-		return tuple([fac.name]+["-" for room in room_list])
+		l.append("")
 	elif fac.role=="HoD":
-		return tuple([fac.name]+["-" for room in room_list])
+		l.append("")
 	else:
 		raise Exception(f"Role {fac.role} not correct")
+	return tuple(l)
 
 def split(a, n):
 	k, m = divmod(len(a), n)

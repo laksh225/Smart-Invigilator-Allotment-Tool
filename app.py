@@ -87,17 +87,20 @@ def details():
 @app.route("/details_endpoint", methods=["POST"])
 def details_ep():
 	name = request.form.get("faculty")
-	op_db_name = "2021-09-30 20:06:50.828809.db" #session["op_db"]
+	op_db_name = "2021-10-05 20:03:31.985346.db"  #session["op_db"]
 	con = sqlite3.connect(op_db_name)
 	cur = con.cursor()
-	result = {}
+	result = []
 	for table in ["comman", "session1", "session2", "session3", "session4", "session5", "session6"]:
 		r = cur.execute(f"SELECT * from {table} WHERE name='{name}'")
 		res = r.fetchone()
 		if r.fetchone():
 			raise Exception("More than one allocation for a faculty in one session")
-		if 1:
-			result[table] = res
+		if res!=None:
+			if table=="comman":
+				result.append([res[0], res[1]])
+			else:
+				result.append([res[0], res[1], table, res[2]])
 	return render_template('details_ep.html', result=result)
 
 @app.route("/details_print", methods=["POST"])

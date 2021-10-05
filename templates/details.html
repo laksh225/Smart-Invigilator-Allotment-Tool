@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block head %}
 <title>Details</title>
+<style>
+table, th, td {
+border : 1px solid black;
+border-collapse : collapse;
+padding: 15px;
+}
+</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 {% endblock %}
 {% block body %}
@@ -19,14 +26,14 @@ event.preventDefault();
 });
 </script>
 <form method="post" action="/details_ep">
-<input list="faculty" name="faculty" id="textbox">
+<input list="faculty" name="faculty" id="textbox" autocomplete="off">
  <datalist id="faculty">
  {% for fac in fac_list %}
  <option value="{{ fac.name }}">
  {% endfor %}
  </datalist>
 <input type="submit" value="Get details" id="get_details">
-<input type="submit" value="Print details" id="print_details" formaction="/details_print" formmethod="post">
+<input type="submit" value="Print details" id="print_details" formaction="/details_print" formmethod="post" autocomplete="off">
 </form>
 <div id="details"></div>
 {% endblock %}
