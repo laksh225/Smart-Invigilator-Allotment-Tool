@@ -10,6 +10,15 @@ class Faculty:
 	def __repr__(self):
 		return f'{self.name} - {self.designation} - {self.flag}'
 
+	def __eq__(self, other):
+		if not isinstance(other, Faculty):
+			raise NotImplemented
+		else:
+			if self.name==other.name:
+				if self.designation==other.designation:
+					if self.flag==other.flag:
+						return True
+			return False
 	def inc_flag(self):
 		self.flag += 1
 

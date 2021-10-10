@@ -24,7 +24,16 @@ def random_unique(rep, added_list, designation, experience=0):
 	i = 0
 	while(len(unique_list)<rep):
 		fac_list = get_faculty(designation, i)
-		fac_list = list(filter(lambda fac:fac not in added_list, fac_list))
+		fac_list2=[]
+
+		for fac in fac_list:
+			flag=0
+			for fac2 in added_list:
+				if fac==fac2:
+					flag=1
+			if flag==0:
+				fac_list2.append(fac)
+		fac_list = fac_list2
 		if experience:
 			fac_list = list(filter(lambda fac:fac.experience==1, fac_list))
 		if i>=1000:
