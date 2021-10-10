@@ -37,7 +37,7 @@ def close_connection(exception):
 
 @app.route('/')
 def home():
-	return 'Hello'
+	return render_template('home.html')
 
 @app.route('/allocate')
 def allocate():
