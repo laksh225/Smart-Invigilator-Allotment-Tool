@@ -122,6 +122,9 @@ def details_all():
 	html.write_pdf("tmp.pdf")
 	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
 
+@app.route("/jquery-3.1.1-min.js")
+def jquery_js():
+	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool", "jquery-3.1.1-min.js")
 """
 Details to store per user:
 name
