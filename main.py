@@ -12,11 +12,7 @@ room_list = [chr(i+65) for i in range(10)]
 def get_faculty(designation, index, load_all = 0):
 	fac_list = []
 	global fac_dict
-	#if (load_all):
 	fac_list=list(filter(lambda fac:fac.designation==designation, fac_dict[index]))
-	#else:
-	#	while(1):
-	#		fac_list+=fac_dict[flag]
 	return fac_list
 
 def random_unique(rep, added_list, designation, experience=0):
@@ -53,35 +49,29 @@ class Allocate:
 		self.sessions = [[] for i in range(1+6)] # Staff same for all 6 sessions plus session wise staff allocation
 		self.filename = str(datetime.datetime.now())+".db"
 
-	#def __str__(self):
-	#	print(self.sessions)
-
 	def allocate(self, n):
 		comman = self.sessions[0][0]+self.sessions[0][2]
 		DySp = random_unique(1,self.sessions[n-1][0], "Professor")
-		[fac.inc_flag() for fac in DySp] #Increment flag
 		for fac in DySp:
+			fac.flag+=1
 			fac_dict[fac.flag-1].remove(fac)
-			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
-		for fac in DySp:
+			fac_dict[fac.flag].append(fac)
 			fac.role = "DySp"
 		print(f'\nDEPUTY SUPERINTENDENT = {DySp}\n')
 
 		invigilators = random_unique(10, self.sessions[n-1][1]+comman, "Assistant Professor")
-		[fac.inc_flag() for fac in invigilators]
 		for fac in invigilators:
+			fac.flag+=1
 			fac_dict[fac.flag-1].remove(fac)
-			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
-		for fac in invigilators:
+			fac_dict[fac.flag].append(fac)
 			fac.role = "Invigilator"
 		print(f'INVIGILATORS = {invigilators}\n')
 
 		reliever = random_unique(3, self.sessions[n-1][2], "Associate Professor")
-		[fac.inc_flag() for fac in reliever]
 		for fac in reliever:
+			fac.flag+=1
 			fac_dict[fac.flag-1].remove(fac)
-			fac_dict[fac.flag] = fac_dict[fac.flag]+[fac]
-		for fac in reliever:
+			fac_dict[fac.flag].append(fac)
 			fac.role = "Reliever"
 		print(f'RELIEVER = {reliever}\n')
 
@@ -91,12 +81,10 @@ class Allocate:
 		con = sqlite3.connect(self.filename)
 		cur = con.cursor()
 		create_query = f"CREATE TABLE {'session'+str(n)} ( \n name text,\n role text,\n room no text)"
-		#print(create_query)
 		cur.execute(create_query)
 		for fac_list in self.sessions[n]:
 			for fac in fac_list:
 				result = cur.execute( f"Insert into {'session'+str(n)} values(?, ?, ?)" ,get_query(fac_list, fac, n))
-	#	result = cur.executemany(f"Insert into {'sessions'+str(n)} values(:a, :b, :c)", [{'a':self.sessions[n][2][i].name, 'b':'Reliever', 'c':'room'+str(i)} for i in range(len(reliever))])
 		con.commit()
 		con.close()
 
@@ -109,12 +97,14 @@ class Allocate:
 		squad = random_unique(4, backup, "Assistant Professor", experience = 1)
 		for fac in squad:
 			fac.flag+=3
+			fac_dict[fac.flag-3].remove(fac)
+			fac_dict[fac.flag].append(fac)
 			fac.role = "Squad"
 		print(f'SQUAD = {squad}\n')
 
 		global HoD
-		HoD[0].flag+=1						#What to put?
 		for fac in HoD:
+			fac.flag+=1		#What to put?
 			fac.role = "HoD"
 		print(f'HoD = {HoD}')
 		self.sessions[0]=[squad]+[HoD]+[backup]+[[]]+[[]]+[[]]	#Empty list added so that allocate does not throw error for first session	
