@@ -4,8 +4,9 @@
 {% endblock %}
 
 {% block body %}
-<ul>
+<table>
 {% for fac in fac_list %}
-<li> Name={{ fac[0] }} Email={{fac[1]}} Designation={{fac[2]}} </li>
+<tr><td> Name={{ fac[0] }}</td><td> Email={{fac[1]}}</td><td> Designation={{fac[2]}}</td></tr>
 {% endfor %}
+</table>
 {% endblock %}
