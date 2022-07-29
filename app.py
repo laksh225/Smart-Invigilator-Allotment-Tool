@@ -64,6 +64,7 @@ def do_allocation():
 			pickle.dump((sessions, i+1), f)
 	else:
 		return abort(404)
+	session["op_db"] = sessions.filename
 	return render_template('chart.html', sessions = sessions.sessions)
 
 @app.route('/input')
@@ -73,6 +74,7 @@ def inp():
 @app.route('/allocate_all')
 def allocate_all():
 	sessions = main()
+	session["op_db"] = sessions.filename
 	return render_template('allocate_all.html', sessions=sessions.sessions)
 
 @app.route('/admin')
@@ -84,10 +86,13 @@ def details():
 	fac_list = load()
 	return render_template('details.html', fac_list=fac_list)
 
-@app.route("/details_endpoint", methods=["POST"])
+@app.route("/details_ep", methods=["POST"])
 def details_ep():
 	name = request.form.get("faculty")
-	op_db_name = "2021-10-05 20:03:31.985346.db"  #session["op_db"]
+	if 'op_db' not in session:
+		op_db_name = "2022-07-29 20:01:32.117002.db"
+	else:
+		op_db_name = session["op_db"]
 	con = sqlite3.connect(op_db_name)
 	cur = con.cursor()
 	result = []
@@ -106,10 +111,10 @@ def details_ep():
 @app.route("/details_print", methods=["POST"])
 def details_print():
 	name = request.form.get("faculty")
-	response = requests.post("http://127.0.0.1:5000/details_endpoint", data={"faculty":name})
+	response = requests.post("http://127.0.0.1:5000/details_ep", data={"faculty":name})
 	html = weasyprint.HTML(string=response.text)
 	html.write_pdf("tmp.pdf")
-	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
+	return send_from_directory("/home/laksh/Projects/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
 
 @app.route("/details_all", methods=["GET"])
 def details_all():
@@ -120,11 +125,11 @@ def details_all():
 		html+=response.text
 	html = weasyprint.HTML(string=html)
 	html.write_pdf("tmp.pdf")
-	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
+	return send_from_directory("/home/laksh/Projects/Smart-Invigilator-Allotment-Tool/", "tmp.pdf", as_attachment=True)
 
 @app.route("/jquery-3.1.1-min.js")
 def jquery_js():
-	return send_from_directory("/home/laksh/Projects/SIAT/Smart-Invigilator-Allotment-Tool", "jquery-3.1.1-min.js")
+	return send_from_directory("/home/laksh/Projects/Smart-Invigilator-Allotment-Tool", "jquery-3.1.1-min.js")
 """
 Details to store per user:
 name

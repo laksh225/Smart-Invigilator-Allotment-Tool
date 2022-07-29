@@ -5,5 +5,7 @@ Writing Area.txt
 venv/
 tmp/
 2021*
+2022*
 flask_session/
 *.pdf
+
