@@ -121,7 +121,7 @@ def details_all():
 	fac_list = load()
 	html=""
 	for fac in fac_list:
-		response = requests.post("http://127.0.0.1:5000/details_endpoint", data={"faculty":fac.name})
+		response = requests.post("http://127.0.0.1:5000/details_ep", data={"faculty":fac.name})
 		html+=response.text
 	html = weasyprint.HTML(string=html)
 	html.write_pdf("tmp.pdf")

@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 
 fac_dict = {}
-HoD = [Faculty("Dr. K S Geetha", 0, "HoD", 1, 1, "HoD")]					# Get HoD
+HoD = [Faculty("Dr. H V Ravish Aradhya", 0, "HoD", 1, 1, "HoD")]					# Get HoD
 room_list = [chr(i+65) for i in range(10)]
 
 def get_faculty(designation, index, load_all = 0):
