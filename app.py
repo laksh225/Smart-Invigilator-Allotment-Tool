@@ -64,7 +64,7 @@ def do_allocation():
 			pickle.dump((sessions, i+1), f)
 	else:
 		return abort(404)
-	session["op_db"] = sessions.filename
+	session['op_db'] = sessions.filename
 	return render_template('chart.html', sessions = sessions.sessions)
 
 @app.route('/input')
@@ -74,7 +74,7 @@ def inp():
 @app.route('/allocate_all')
 def allocate_all():
 	sessions = main()
-	session["op_db"] = sessions.filename
+	session['op_db'] = sessions.filename
 	return render_template('allocate_all.html', sessions=sessions.sessions)
 
 @app.route('/admin')
@@ -90,9 +90,9 @@ def details():
 def details_ep():
 	name = request.form.get("faculty")
 	if 'op_db' not in session:
-		op_db_name = "2022-07-29 20:01:32.117002.db"
+		op_db_name = "2022-07-30 11:22:39.604658.db"
 	else:
-		op_db_name = session["op_db"]
+		op_db_name = session['op_db']
 	con = sqlite3.connect(op_db_name)
 	cur = con.cursor()
 	result = []

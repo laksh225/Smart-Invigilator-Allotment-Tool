@@ -8,4 +8,5 @@ tmp/
 2022*
 flask_session/
 *.pdf
+inputdb.sqlite
 
